@@ -1,0 +1,75 @@
+/* MinesweeperBoard.css */
+
+/* Container for the entire board */
+.minesweeper-board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f2f5;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Customize title style */
+.minesweeper-board h2 {
+    font-family: Aial, sans-serif;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Grid layout for the board */
+.board-grid {
+    display: grid;
+    gap: 2px;
+    grid-template-columns: repeat(auto-fit, 40px);
+}
+
+/* Styling for each cell */
+.cell {
+    width: 40px;
+    height: 40px;
+    background-color: #E0E0E0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s easy; /* Smooth hover and click effect */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Mine cell styling */
+.cell.mine {
+    background-color: #F8D7DA;
+    color: #721C24;
+}
+
+/* Hover effect for cells */
+.cell:hover {
+    transform: scale(1.05); /* Make the cell slightly bigger on hover */
+    background-color: #D4D4D4;
+}
+
+/* Cell active state (when clicked) */
+.cell:active {
+    transform: scale(0.95); /* Slightly smaller for a chlick feel */
+    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cell.revealed {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
