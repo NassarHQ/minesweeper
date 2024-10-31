@@ -1,5 +1,16 @@
 /* MinesweeperBoard.css */
 
+/* Container for the entire board with a single border */
+/* Container for the entire board with a single border */
+.board-container {
+    border: 3px solid #B0B0B0; /* Define a clear border */
+    padding: 5px; /* Space around the cells */
+    border-radius: 10px; /* Rounded corners */
+    margin-top: 15px; /* Space between board and other elements */
+    background-color: #f7f7f7; /* Light background color for contrast */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for 3D effect */
+}
+
 /* Container for the entire board */
 .minesweeper-board {
     display: flex;
@@ -30,46 +41,38 @@
 .cell {
     width: 40px;
     height: 40px;
-    background-color: #E0E0E0;
+    background-color: #a5a2a2;
     border-radius: 8px;
     display: flex;
     justify-content: center;
+    align-items: center;
     font-size: 1rem;
+    line-height: 40px; /* Match line height to cell height to center text */
+    padding: 0;
+    margin: 0;
     cursor: pointer;
-    transition: all 0.2s easy; /* Smooth hover and click effect */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Mine cell styling */
-.cell.mine {
-    background-color: #F8D7DA;
-    color: #721C24;
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease; /* Smooth hover and click effect */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* Hover effect for cells */
 .cell:hover {
-    transform: scale(1.05); /* Make the cell slightly bigger on hover */
+    /* transform: scale(1.05); /* Make the cell slightly bigger on hover */
     background-color: #D4D4D4;
 }
 
 /* Cell active state (when clicked) */
 .cell:active {
-    transform: scale(0.95); /* Slightly smaller for a chlick feel */
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
+    /* transform: scale(0.95); /* Slightly smaller for a chlick feel */
+    box-shadow: inset 0px 2px 4px rgb(35, 213, 38);
 }
 
 .cell.revealed {
+    background-color: #C0C0C0; /* Light gray to indicate its been revealed */
+    color: #333; /* Darker text color */
+    box-shadow: none;
+    border: 1px solid #B0B0B0;
+    cursor: default;
     animation: fadeIn 0.3s ease forwards;
 }
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-

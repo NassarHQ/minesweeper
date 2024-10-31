@@ -1,18 +1,30 @@
 import React from "react";
 import Cell from "./Cell";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function MinesweeperBoard() {
+
+    // Define all possible directions for adjacent cells (total 8)
+    const directions = [
+        [-1, -1], [-1, 0], [-1, 1], // Top-Left, Top, Top-Right
+        [0, -1],           [0, 1],  // Left, Right
+        [1, -1],  [1, 0],  [1, 1]   // Bottom-Left, Bottom, Bottom-Right
+    ];
+
      // State ti store user inputs for rows and columns
      const [numRows, setNumRows] = useState(5); // Default row value
      const [numCols, setNumCols] = useState(5); // Default col value
      const [board, setBoard] = useState([]); // Stores the board generated
    
-     function makeBoard() {
-        console.log("Generating board with ", numRows, " rows and ",
-            numCols, " columns");
-        generateBoard(numRows, numCols); // Call generateBoard function
-    }
+     // Generate board on component mount or when numRows/numCols change
+    useEffect(() => {
+        const makeBoard = () => {
+            console.log("Generating board with ", numRows, " rows and ", numCols, " columns");
+            generateBoard(numRows, numCols); // Call generateBoard function
+        };
+        
+        makeBoard();
+    }, [numRows, numCols]); // Regenerate board when numRows or numCols change
 
     // Function to generate the board
     function generateBoard(numRows, numCols) {
@@ -25,7 +37,7 @@ function MinesweeperBoard() {
         );
     
         // Place mines
-        const numMines = Math.floor(numRows * numCols * 0.2);
+        const numMines = Math.floor(numRows * numCols * 0.3);
         let minesPlaced = 0;
     
         while (minesPlaced < numMines) {
@@ -53,12 +65,6 @@ function MinesweeperBoard() {
     
     // Function to count the number of mines around a specific cell
     function countAdjacentMines(board, row, col) {
-        // Define all possible directions for adjacent cells (total 8)
-        const directions = [
-            [-1, -1], [-1, 0], [-1, 1], // Top-Left, Top, Top-Right
-            [0, -1],           [0, 1],  // Left, Right
-            [1, -1],  [1, 0],  [1, 1]   // Bottom-Left, Bottom, Bottom-Right
-        ];
 
         // Initialize a counter to keeo track of number of mines found
         let mineCount = 0;
@@ -87,23 +93,39 @@ function MinesweeperBoard() {
 
     // Function to hanle clicks from user
     function handleCellClick(row, col) {
-        if (board[row][col].isRevealed) return; // Don't reveal an already revealed cell
-
+        if (board[row][col].isRevealed) return; // Prevent revealing an already revealed cell
+    
         // Deep copy of the board
-        const newBoard = board.map(row => row.map(cell => ({ ...cell})));
-
+        const newBoard = board.map(r => r.map(cell => ({ ...cell })));
+    
+        function revealCell(r, c) {
+            // Base case: if out of bounds or already revealed, return
+            if (r < 0 || r >= numRows || c < 0 || c >= numCols || newBoard[r][c].isRevealed) {
+                return;
+            }
+    
+            // Reveal the cell
+            newBoard[r][c].isRevealed = true;
+    
+            // If the cell has no adjacent mines, reveal its neighbors
+            if (newBoard[r][c].adjacentMines === 0) {
+                // Reveal surrounding cells recursively
+                directions.forEach(([dr, dc]) => revealCell(r + dr, c + dc));
+            }
+        }
+    
         if (newBoard[row][col].isMine) {
             // Game over logic - reveal all mines
-            console.log("Game Over! You stepped on a mind.");
-            newBoard.forEach(row => row.forEach(cell => { cell.isRevealed = true }));
+            console.log("Game Over! You stepped on a mine.");
+            newBoard.forEach(r => r.forEach(cell => { cell.isRevealed = true }));
         } else {
-            // Reveal this cell
-            newBoard[row][col].isRevealed = true;
+            // Call recursive reveal for non-mine cell
+            revealCell(row, col);
         }
-
+    
         // Update board state
         setBoard(newBoard);
-    }
+    }    
 
     return (
         <div className = "minesweeper-board">
@@ -130,26 +152,28 @@ function MinesweeperBoard() {
             </label>
 
             {/* Button to generate the board */}
-            <button onClick={makeBoard}>Generate Board</button>
+            <button onClick={() => generateBoard(numRows, numCols)}>Generate Board</button>
 
-            {/* Render the grid of cells */}
-            <div
-            className="board-grid"
-            style={{ gridTemplateColumns: `repeat(${numCols}, 40px)` }}
-            >
-                {board.map((row, rowIndex) => (
-                    <div key={rowIndex} className="row">
-                        {row.map((cell, colIndex) => (
-                            <Cell // Render the Cell component
-                                key={colIndex}
-                                isClicked={cell.isRevealed} // Pass the cell's state
-                                isMine={cell.isMine}
-                                adjacentMines={cell.adjacentMines}
-                                onClick={() => handleCellClick(rowIndex, colIndex)}
-                            />
-                        ))}
-                    </div>
-                ))}
+            {/* Add a container around the grid to apply a single border */}
+            <div className="board-container">
+                <div
+                    className="board-grid"
+                    style={{ gridTemplateColumns: `repeat(${numCols}, 40px)` }}
+                >
+                    {board.map((row, rowIndex) => (
+                        <div key={rowIndex} className="row">
+                            {row.map((cell, colIndex) => (
+                                <Cell
+                                    key={colIndex}
+                                    isClicked={cell.isRevealed}
+                                    isMine={cell.isMine}
+                                    adjacentMines={cell.adjacentMines}
+                                    onClick={() => handleCellClick(rowIndex, colIndex)}
+                                />
+                            ))}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
